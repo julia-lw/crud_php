@@ -1,13 +1,13 @@
 <?php
-require_once "auth.php";
-require_once "config.php";
+//require_once "auth.php";
+//require_once "config.php";
 
 $nome = $endereco = $salario = $setor_id = "";
 $nome_erro = $endereco_erro = $salario_erro = $foto_erro = $setor_erro = "";
 
 // Busca a lista de setores para o campo <select>
 $setores = [];
-$res_setores = mysqli_query($link, "SELECT * FROM setores ORDER BY nome ASC");
+$res_produto = mysqli_query($link, "SELECT * FROM setores ORDER BY nome ASC");
 if ($res_setores) {
     while ($s = mysqli_fetch_assoc($res_setores)) {
         $setores[] = $s;

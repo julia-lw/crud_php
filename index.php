@@ -17,7 +17,7 @@ require_once "config.php";
         <div class="max-w-5xl mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-building text-blue-500"></i>
-                <span class="font-bold text-sm tracking-wide">Sistema da Empresa</span>
+                <span class="font-bold text-sm tracking-wide">Compra de Produtos</span>
             </div>
             <div class="flex items-center gap-4 text-sm">
                 <span class="text-slate-300">Olá, <strong class="text-white"><?php echo htmlspecialchars($_SESSION["admin_nome"]); ?></strong></span>
@@ -30,12 +30,12 @@ require_once "config.php";
 
     <div class="max-w-5xl mx-auto my-10 p-6 bg-white rounded-xl shadow-sm border border-gray-200">
         <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-800">Detalhes dos Funcionários</h2>
+            <h2 class="text-2xl font-bold text-gray-800">Detalhes dos Produtos</h2>
             <a href="create.php" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition inline-flex items-center gap-2 shadow-sm">
-                <i class="fa fa-plus"></i> Adicionar Novo Funcionário
+                <i class="fa fa-plus"></i> Cadastrar Novo Produto
             </a>
             <a href="create_setor.php" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition inline-flex items-center gap-2 shadow-sm">
-                <i class="fa fa-plus"></i> Adicionar Novo Setor
+                <i class="fa fa-plus"></i> Adicionar Novo Pedido
             </a>
           
         </div>
