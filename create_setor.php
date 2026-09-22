@@ -7,7 +7,7 @@ $nome_erro = "";
 
 // Busca a lista de setores para o campo <select>
 $setores = [];
-$res_setores = mysqli_query($link, "SELECT * FROM setores ORDER BY nome ASC");
+$res_setores = mysqli_query($link, "SELECT * FROM pedido ORDER BY nome ASC");
 if ($res_setores) {
     while ($s = mysqli_fetch_assoc($res_setores)) {
         $setores[] = $s;
