@@ -37,61 +37,64 @@ require_once "config.php";
             <a href="create_setor.php" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition inline-flex items-center gap-2 shadow-sm">
                 <i class="fa fa-plus"></i> Adicionar Novo Pedido
             </a>
-          
         </div>
 
         <?php
-        $sql = "SELECT f.*, s.nome AS setor_nome 
-                FROM funcionarios f 
-                INNER JOIN setores s ON f.setor_id = s.id 
-                ORDER BY f.id DESC";
+$sql = "SELECT * FROM produto ORDER BY 1 DESC";
 
-        if ($result = mysqli_query($link, $sql)) {
-            if (mysqli_num_rows($result) > 0) {
-                echo '<div class="overflow-x-auto rounded-lg border border-gray-200">';
-                echo '<table class="w-full border-collapse text-left text-sm text-gray-600">';
-                echo '<thead class="bg-gray-100 text-gray-700 uppercase text-xs font-semibold">';
-                echo '<tr>';
-                echo '<th class="px-4 py-3 border-b">#</th>';
-                echo '<th class="px-4 py-3 border-b">Nome</th>';
-                echo '<th class="px-4 py-3 border-b">Setor</th>';
-                echo '<th class="px-4 py-3 border-b">Endereço</th>';
-                echo '<th class="px-4 py-3 border-b">Salário</th>';
-                echo '<th class="px-4 py-3 border-b text-center">Ações</th>';
-                echo '</tr>';
-                echo '</thead>';
-                echo '<tbody class="divide-y divide-gray-200">';
-                
-                while ($row = mysqli_fetch_array($result)) {
-                    $foto_path = (!empty($row['foto']) && file_exists('uploads/' . $row['foto'])) ? 'uploads/' . $row['foto'] : 'https://via.placeholder.com/40';
+if ($result = mysqli_query($link, $sql)) {
+    if (mysqli_num_rows($result) > 0) {
+        echo '<div class="overflow-x-auto rounded-lg border border-gray-200">';
+        echo '<table class="w-full border-collapse text-left text-sm text-gray-600">';
+        echo '<thead class="bg-gray-100 text-gray-700 uppercase text-xs font-semibold">';
+        echo '<tr>';
+        echo '<th class="px-4 py-3 border-b">#</th>';
+        echo '<th class="px-4 py-3 border-b">Imagem</th>';
+        echo '<th class="px-4 py-3 border-b">Nome</th>';
+        echo '<th class="px-4 py-3 border-b">Descrição</th>';
+        echo '<th class="px-4 py-3 border-b">Preço</th>';
+        echo '<th class="px-4 py-3 border-b text-center">Ações</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody class="divide-y divide-gray-200">';
+        
+        while ($row = mysqli_fetch_array($result)) {
+            $id = $row['id'] ?? $row['id_produto'] ?? $row['cod_produto'] ?? array_values($row)[0];
+            $nome = $row['nome'] ?? $row['nome_produto'] ?? $row['titulo'] ?? '';
+            $descricao = $row['descricao'] ?? $row['desc_produto'] ?? '';
+            $preco = $row['preco'] ?? $row['valor'] ?? $row['preco_produto'] ?? 0;
+            $foto = $row['foto'] ?? $row['imagem'] ?? '';
 
-                    echo '<tr class="hover:bg-gray-50 transition">';
-                    echo '<td class="px-4 py-3 font-medium text-gray-900">' . $row['id'] . '</td>';
-                    echo '<td class="px-4 py-3 flex items-center gap-3">';
-                    echo '<img src="' . $foto_path . '" class="w-9 h-9 rounded-full object-cover border border-gray-200">';
-                    echo htmlspecialchars($row['nome']);
-                    echo '</td>';
-                    echo '<td class="px-4 py-3"><span class="bg-blue-50 text-blue-700 font-medium px-2.5 py-1 rounded-md text-xs border border-blue-100">' . htmlspecialchars($row['setor_nome']) . '</span></td>';
-                    echo '<td class="px-4 py-3">' . htmlspecialchars($row['endereco']) . '</td>';
-                    echo '<td class="px-4 py-3">R$ ' . number_format($row['salario'], 2, ',', '.') . '</td>';
-                    echo '<td class="px-4 py-3 text-center space-x-3">';
-                    echo '<a href="read.php?id='. $row['id'] .'" class="text-blue-600 hover:text-blue-800"><i class="fa fa-eye"></i></a>';
-                    echo '<a href="update.php?id='. $row['id'] .'" class="text-amber-600 hover:text-amber-800"><i class="fa fa-pencil"></i></a>';
-                    echo '<a href="delete.php?id='. $row['id'] .'" class="text-red-600 hover:text-red-800"><i class="fa fa-trash"></i></a>';
-                    echo '</td>';
-                    echo '</tr>';
-                }
-                
-                echo '</tbody>';
-                echo '</table>';
-                echo '</div>';
-                mysqli_free_result($result);
-            } else {
-                echo '<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">Nenhum registro encontrado.</div>';
-            }
+            $foto_path = (!empty($foto) && file_exists('uploads/' . $foto)) ? 'uploads/' . $foto : 'uploads/girafa_pelucia.jpg';
+
+            echo '<tr class="hover:bg-gray-50 transition">';
+            echo '<td class="px-4 py-3 font-medium text-gray-900">' . htmlspecialchars($id) . '</td>';
+            echo '<td class="px-4 py-3">';
+            echo '<img src="' . $foto_path . '" class="w-10 h-10 rounded-md object-cover border border-gray-200">';
+            echo '</td>';
+            echo '<td class="px-4 py-3 font-medium text-gray-800">' . htmlspecialchars($nome) . '</td>';
+            echo '<td class="px-4 py-3 text-gray-500">' . htmlspecialchars($descricao) . '</td>';
+            echo '<td class="px-4 py-3 font-semibold text-emerald-600">R$ ' . number_format((float)$preco, 2, ',', '.') . '</td>';
+            echo '<td class="px-4 py-3 text-center space-x-3">';
+            echo '<a href="read.php?id='. $id .'" class="text-blue-600 hover:text-blue-800"><i class="fa fa-eye"></i></a>';
+            echo '<a href="update.php?id='. $id .'" class="text-amber-600 hover:text-amber-800"><i class="fa fa-pencil"></i></a>';
+            echo '<a href="delete.php?id='. $id .'" class="text-red-600 hover:text-red-800"><i class="fa fa-trash"></i></a>';
+            echo '</td>';
+            echo '</tr>';
         }
-        mysqli_close($link);
-        ?>
+        
+        echo '</tbody>';
+        echo '</table>';
+        echo '</div>';
+        mysqli_free_result($result);
+    } else {
+        echo '<div class="bg-gray-50 border border-gray-200 text-gray-600 px-4 py-3 rounded-lg text-center">Nenhum produto cadastrado ainda.</div>';
+    }
+} else {
+    echo '<div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">Erro na consulta: ' . mysqli_error($link) . '</div>';
+}
+mysqli_close($link);
+?>
     </div>
 </body>
 </html>
