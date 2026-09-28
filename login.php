@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+// Se já estiver logado, redireciona para o painel principal
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: index.php");
     exit();
@@ -18,32 +19,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($email) || empty($senha)) {
         $login_erro = "Por favor, preencha o e-mail e a senha.";
     } else {
-        $sql = "SELECT id, nome, email, senha FROM administradores WHERE email = ?";
+        // Consulta dinâmica na tabela usuario do banco ecommerce
+        $sql = "SELECT * FROM usuario WHERE email = ?";
         
         if ($stmt = mysqli_prepare($link, $sql)) {
             mysqli_stmt_bind_param($stmt, "s", $param_email);
             $param_email = $email;
             
             if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_store_result($stmt);
+                $result = mysqli_stmt_get_result($stmt);
                 
-                // Utilização correta da função para Prepared Statements
-                if (mysqli_stmt_num_rows($stmt) == 1) {
-                    mysqli_stmt_bind_result($stmt, $id, $nome, $email, $hashed_senha);
-                    if (mysqli_stmt_fetch($stmt)) {
-                        if (password_verify($senha, $hashed_senha)) {
-                            // Senha correta: Inicia nova sessão
-                            session_regenerate_id();
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["admin_id"] = $id;
-                            $_SESSION["admin_nome"] = $nome;
-                            $_SESSION["admin_email"] = $email;
-                            
-                            header("location: index.php");
-                            exit();
-                        } else {
-                            $login_erro = "E-mail ou senha inválidos.";
-                        }
+                if ($row = mysqli_fetch_assoc($result)) {
+                    // Pega dinamicamente as colunas de ID, Nome e Senha
+                    $id = $row['id'] ?? $row['id_usuario'] ?? $row['cod_usuario'] ?? 1;
+                    $nome = $row['nome'] ?? $row['nome_usuario'] ?? 'Usuário';
+                    $senha_db = $row['senha'] ?? $row['senha_usuario'] ?? '';
+
+                    // Valida senha criptografada (password_verify) ou em texto puro
+                    $senha_valida = password_verify($senha, $senha_db) || ($senha === $senha_db);
+
+                    if ($senha_valida) {
+                        // Senha correta: Inicia a sessão
+                        session_regenerate_id();
+                        $_SESSION["loggedin"] = true;
+                        $_SESSION["admin_id"] = $id;
+                        $_SESSION["admin_nome"] = $nome;
+                        $_SESSION["admin_email"] = $email;
+                        
+                        header("location: index.php");
+                        exit();
+                    } else {
+                        $login_erro = "E-mail ou senha inválidos.";
                     }
                 } else {
                     $login_erro = "E-mail ou senha inválidos.";
@@ -63,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Painel Administrativo</title>
+    <title>Login | Painel E-commerce</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -94,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <i class="fa fa-envelope"></i>
                         </span>
-                        <input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required placeholder="admin@empresa.com" class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm">
+                        <input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required placeholder="seuemail@exemplo.com" class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm">
                     </div>
                 </div>
 
