@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Se já estiver logado, redireciona para o painel principal
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: index.php");
     exit();
@@ -19,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($email) || empty($senha)) {
         $login_erro = "Por favor, preencha o e-mail e a senha.";
     } else {
-        // Consulta dinâmica na tabela usuario do banco ecommerce
         $sql = "SELECT * FROM usuario WHERE email = ?";
         
         if ($stmt = mysqli_prepare($link, $sql)) {
@@ -30,16 +28,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $result = mysqli_stmt_get_result($stmt);
                 
                 if ($row = mysqli_fetch_assoc($result)) {
-                    // Pega dinamicamente as colunas de ID, Nome e Senha
                     $id = $row['id'] ?? $row['id_usuario'] ?? $row['cod_usuario'] ?? 1;
                     $nome = $row['nome'] ?? $row['nome_usuario'] ?? 'Usuário';
                     $senha_db = $row['senha'] ?? $row['senha_usuario'] ?? '';
-
-                    // Valida senha criptografada (password_verify) ou em texto puro
                     $senha_valida = password_verify($senha, $senha_db) || ($senha === $senha_db);
 
                     if ($senha_valida) {
-                        // Senha correta: Inicia a sessão
                         session_regenerate_id();
                         $_SESSION["loggedin"] = true;
                         $_SESSION["admin_id"] = $id;
@@ -75,7 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-        <!-- Cabeçalho -->
         <div class="bg-slate-900 p-8 text-center text-white">
             <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/30">
                 <i class="fa fa-user-shield text-2xl"></i>
@@ -84,7 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p class="text-slate-400 text-sm mt-1">Insira suas credenciais para acessar</p>
         </div>
 
-        <!-- Formulário -->
         <div class="p-8">
             <?php if (!empty($login_erro)): ?>
                 <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg text-sm mb-6 flex items-center gap-3">
